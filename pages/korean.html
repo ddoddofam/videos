@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한글용사 아이야</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .video-count {
+            text-align: right;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .video-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .thumbnail-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background-color: #e9ecef;
+            overflow: hidden;
+        }
+
+        .thumbnail-wrapper img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .video-card:hover .thumbnail-wrapper img {
+            transform: scale(1.03);
+        }
+
+        .video-details {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .video-title {
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        /* 상단 헤더 영역 스타일 (수평선 제거 및 상대 위치 지정) */
+        .header-area {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* 버튼은 왼쪽에 고정 */
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+            min-height: 50px; /* 버튼과 제목의 높이 균형을 위해 설정 */
+        }
+
+        /* 홈으로 버튼 스타일 */
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background-color: #ffffff;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+            z-index: 10; /* 제목보다 위에 보이도록 설정 */
+        }
+
+        /* 홈으로 버튼 마우스 호버 효과 */
+        .home-btn:hover {
+            background-color: #ff6b6b;
+            color: #ffffff;
+            border-color: #ff6b6b;
+            transform: translateX(-3px);
+        }
+
+        /* ★ 제목 중앙 정렬 스타일 */
+        .header-area h1 {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            white-space: nowrap; /* 화면이 좁아져도 제목이 줄바꿈되지 않도록 방지 */
+        }
+
+        /* 모바일 등 화면이 아주 작아질 때 버튼과 제목이 겹치는 것을 방지 */
+        @media (max-width: 576px) {
+            .header-area {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .header-area h1 {
+                position: static;
+                transform: none;
+                left: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header-area">
+            <a href="../index.html" class="home-btn">
+                🏠 홈으로
+            </a>
+            <h1>한글용사 아이야</h1> </div>
+        
+        <div class="video-count" id="total-count">총 0개의 영상</div>
+        
+        <div class="video-grid" id="video-container"></div>
+    </div>
+
+    <!-- 1. 데이터 파일 먼저 로드 -->
+    <script src="videos.js"></script>
+    
+    <!-- 2. 데이터를 읽어서 화면에 카드를 그리는 스크립트 -->
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const container = document.getElementById("video-container");
+    const countDisplay = document.getElementById("total-count");
+    
+    countDisplay.innerText = `총 ${koreanVideos.length}개의 영상`;
+
+    // 유튜브 비디오 ID를 더 정확하게 추출하는 함수
+    function getYoutubeId(url) {
+        if (!url) return null;
+        // 다양한 유튜브 주소 패턴 정규식 처리
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    koreanVideos.forEach(video => {
+        const card = document.createElement("a");
+        card.href = video.link;
+        card.target = "_blank";
+        card.className = "video-card";
+
+        const videoId = getYoutubeId(video.link);
+        let finalThumbnail = video.thumbnail;
+
+        // 수동 지정 썸네일이 없고, 유튜브 ID 추출에 성공한 경우
+        if (!finalThumbnail && videoId) {
+            // 가장 먼저 '중간 화질(mqdefault)'을 기본으로 요청합니다. 
+            // mqdefault는 모든 유튜브 영상이 예외 없이 무조건 가지고 있는 화질이라 엑박이 안 뜹니다!
+            finalThumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        } else if (!finalThumbnail) {
+            // 유튜브 링크도 아닌 경우 기본 샘플 이미지
+            finalThumbnail = 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600';
+        }
+
+        card.innerHTML = `
+            <div class="thumbnail-wrapper">
+                <img src="${finalThumbnail}" alt="${video.title}" loading="lazy">
+            </div>
+            <div class="video-details">
+                <h2 class="video-title">${video.title}</h2>
+                <p class="video-desc">${video.desc || ''}</p>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+});
+    </script>
+</body>
+</html>

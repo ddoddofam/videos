@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도담이의 영상 보관함</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --primary-color: #ff6b6b; /* 따뜻하고 친근한 포인트 색상 */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 60px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 50px;
+        }
+
+        /* 카테고리 그리드 레이아웃 */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            padding: 10px;
+        }
+
+        /* 카테고리 카드 스타일 */
+        .category-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+        }
+
+        /* 마우스 호버 효과 */
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        /* 이모지 아이콘 스타일 */
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .category-card:hover .icon {
+            transform: scale(1.15); /* 호버 시 아이콘 둠칫 확대 */
+        }
+
+        .category-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .category-desc {
+            font-size: 0.9rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎬 도담이의 영상 보관함</h1>
+        <p class="subtitle">보고 싶은 카테고리를 선택해 주세요!</p>
+        
+        <div class="category-grid">
+            
+            <a href="pages/korean.html" class="category-card">
+                <div class="icon">🇰🇷</div>
+                <div class="category-title">재미있는 국어</div>
+                <div class="category-desc">한글용사 아이야 등</div>
+            </a>
+
+            <a href="pages/math.html" class="category-card">
+                <div class="icon">🔢</div>
+                <div class="category-title">신나는 수학</div>
+                <div class="category-desc">넘버블록스 등</div>
+            </a>
+
+            <a href="pages/english.html" class="category-card">
+                <div class="icon">🔤</div>
+                <div class="category-title">영어 나라</div>
+                <div class="category-desc">영어 동요 및 애니메이션</div>
+            </a>
+
+            <a href="pages/play.html" class="category-card">
+                <div class="icon">🎨</div>
+                <div class="category-title">놀이·예술</div>
+                <div class="category-desc">그리기, 종이접기 등</div>
+            </a>
+
+        </div>
+    </div>
+
+</body>
+</html>
