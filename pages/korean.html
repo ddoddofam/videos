@@ -164,6 +164,29 @@
                 left: auto;
             }
         }
+        /* 검색창 영역 스타일 */
+        .search-area {
+            max-width: 500px;
+            margin: 0 auto 30px auto; /* 가운데 정렬 및 아래 여백 */
+            padding: 0 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 30px; /* 둥글둥글한 디자인 */
+            outline: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        /* 검색창에 마우스를 올리거나 클릭했을 때 */
+        .search-input:focus {
+            border-color: #ff6b6b; /* 포인트 색상으로 변경 */
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -175,7 +198,9 @@
                 🏠 홈으로
             </a>
             <h1>한글용사 아이야</h1> </div>
-        
+        <div class="search-area">
+            <input type="text" id="search-box" class="search-input" placeholder="🔍 보고 싶은 영상의 제목을 검색해 보세요!">
+        </div>
         <div class="video-count" id="total-count">총 0개의 영상</div>
         
         <div class="video-grid" id="video-container"></div>
@@ -186,53 +211,62 @@
     
     <!-- 2. 데이터를 읽어서 화면에 카드를 그리는 스크립트 -->
     <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const container = document.getElementById("video-container");
-    const countDisplay = document.getElementById("total-count");
-    
-    countDisplay.innerText = `총 ${koreanVideos.length}개의 영상`;
+        document.addEventListener("DOMContentLoaded", function() {
+            const container = document.getElementById("video-container");
+            const countDisplay = document.getElementById("total-count");
+            const searchBox = document.getElementById("search-box"); // 검색창 가져오기
+            
+            // 유튜브 비디오 ID 추출 함수
+            function getYoutubeId(url) {
+                if (!url) return null;
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const match = url.match(regExp);
+                return (match && match[2].length === 11) ? match[2] : null;
+            }
 
-    // 유튜브 비디오 ID를 더 정확하게 추출하는 함수
-    function getYoutubeId(url) {
-        if (!url) return null;
-        // 다양한 유튜브 주소 패턴 정규식 처리
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
-    }
+            // 화면에 영상 카드들을 그리는 핵심 함수 (검색할 때마다 다시 실행됨)
+            function displayVideos(videosToShow) {
+                container.innerHTML = ""; // 기존 카드를 싹 지우고 시작
+                countDisplay.innerText = `총 ${videosToShow.length}개의 영상`;
 
-    koreanVideos.forEach(video => {
-        const card = document.createElement("a");
-        card.href = video.link;
-        card.target = "_blank";
-        card.className = "video-card";
+                videosToShow.forEach(video => {
+                    const card = document.createElement("a");
+                    card.href = video.link;
+                    card.target = "_blank";
+                    card.className = "video-card";
 
-        const videoId = getYoutubeId(video.link);
-        let finalThumbnail = video.thumbnail;
+                    const videoId = getYoutubeId(video.link);
+                    let finalThumbnail = video.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600');
 
-        // 수동 지정 썸네일이 없고, 유튜브 ID 추출에 성공한 경우
-        if (!finalThumbnail && videoId) {
-            // 가장 먼저 '중간 화질(mqdefault)'을 기본으로 요청합니다. 
-            // mqdefault는 모든 유튜브 영상이 예외 없이 무조건 가지고 있는 화질이라 엑박이 안 뜹니다!
-            finalThumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-        } else if (!finalThumbnail) {
-            // 유튜브 링크도 아닌 경우 기본 샘플 이미지
-            finalThumbnail = 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600';
-        }
+                    card.innerHTML = `
+                        <div class="thumbnail-wrapper">
+                            <img src="${finalThumbnail}" alt="${video.title}" loading="lazy">
+                        </div>
+                        <div class="video-details">
+                            <h2 class="video-title">${video.title}</h2>
+                            <p class="video-desc">${video.desc || ''}</p>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
 
-        card.innerHTML = `
-            <div class="thumbnail-wrapper">
-                <img src="${finalThumbnail}" alt="${video.title}" loading="lazy">
-            </div>
-            <div class="video-details">
-                <h2 class="video-title">${video.title}</h2>
-                <p class="video-desc">${video.desc || ''}</p>
-            </div>
-        `;
-        
-        container.appendChild(card);
-    });
-});
+            // 처음 들어왔을 때는 전체 영상을 보여줌
+            displayVideos(koreanVideos);
+
+            // ★ 검색창에 글자를 입력할 때마다 실행되는 이벤트
+            searchBox.addEventListener("input", function(e) {
+                const keyword = e.target.value.toLowerCase().trim(); // 입력한 글자 (소문자 공백 제거 변환)
+                
+                // 제목에 검색어가 포함된 영상들만 쏙 골라내기
+                const filteredVideos = koreanVideos.filter(video => {
+                    return video.title.toLowerCase().includes(keyword);
+                });
+                
+                // 필터링된 결과만 화면에 새로 그리기
+                displayVideos(filteredVideos);
+            });
+        });
     </script>
 </body>
 </html>
